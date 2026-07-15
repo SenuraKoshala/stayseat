@@ -1,0 +1,6 @@
+
+# .gitignore
+.env
+*/.env
+target/
+*.class
