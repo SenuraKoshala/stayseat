@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 public class RestaurantBookingListener {
 
     private final NotificationProcessorService notificationProcessorService;
-    
+
     @RabbitListener(queues = RabbitMQConfig.RESTAURANT_QUEUE)
     public void consume(EventEnvelope<RestaurantBookingConfirmedPayload> event) {
 
