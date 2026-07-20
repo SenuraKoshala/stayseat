@@ -1,8 +1,11 @@
 package com.stayseat.notification_service.config;
 
+import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
 import org.springframework.amqp.core.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 
 @Configuration
 public class RabbitMQConfig {
@@ -19,6 +22,11 @@ public class RabbitMQConfig {
     public static final String HOTEL_ROUTING_KEY = "hotel.confirmed";
     public static final String RESTAURANT_ROUTING_KEY = "restaurant.confirmed";
     public static final String PAYMENT_ROUTING_KEY = "payment.#";
+
+    @Bean
+    public MessageConverter messageConverter() {
+        return new JacksonJsonMessageConverter();
+    }
 
     @Bean
     public TopicExchange topicExchange() {
