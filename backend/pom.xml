@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+      Aggregator (reactor) POM for the StaySeat backend.
+
+      This is NOT a parent POM - each service keeps its own <parent>
+      spring-boot-starter-parent because they intentionally run on different
+      Spring Boot versions (auth 4.1.0, notification 4.0.7, hotel/restaurant
+      3.3.4). This file only groups the modules so that opening backend/pom.xml
+      in IntelliJ imports all four services at once, each with its own
+      dependencies and Lombok annotation processing configured from its own POM.
+
+      Handy reactor commands from this directory:
+        mvn -pl hotel-booking-service compile
+        mvn -pl restaurant-booking-service spring-boot:run
+    -->
+
+    <groupId>com.stayseat</groupId>
+    <artifactId>stayseat-backend</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <name>stayseat-backend</name>
+    <description>StaySeat - Cloud-Based Unified Hotel Room and Restaurant Table Reservation System (backend aggregator)</description>
+
+    <modules>
+        <module>authservice</module>
+        <module>hotel-booking-service</module>
+        <module>notification-service</module>
+        <module>restaurant-booking-service</module>
+    </modules>
+</project>
