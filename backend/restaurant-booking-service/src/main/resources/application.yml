@@ -6,9 +6,9 @@ spring:
     name: restaurant-booking-service
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/restaurant_booking
-    username: restaurant_svc
-    password: restaurant_pass
+    url: ${RESTAURANT_DB_URL:jdbc:postgresql://localhost:5434/restaurant_booking}
+    username: ${RESTAURANT_DB_USER:restaurant_svc}
+    password: ${RESTAURANT_DB_PASSWORD:restaurant_pass}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -24,6 +24,13 @@ spring:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
+
+  # RabbitMQ - must point at the same broker the Notification Service consumes from.
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
 
 # Shared JWT signing secret - MUST match the Auth Service's secret exactly.
 # For local dev this is a placeholder; get the real value from whoever owns Auth Service

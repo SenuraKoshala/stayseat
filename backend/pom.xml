@@ -27,6 +27,7 @@
     <description>StaySeat - Cloud-Based Unified Hotel Room and Restaurant Table Reservation System (backend aggregator)</description>
 
     <modules>
+        <module>api-gateway</module>
         <module>authservice</module>
         <module>hotel-booking-service</module>
         <module>notification-service</module>
