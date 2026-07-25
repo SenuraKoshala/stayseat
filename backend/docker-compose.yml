@@ -12,6 +12,7 @@
 #   hotel-db         -> localhost:5432
 #   restaurant-db    -> localhost:5434
 #   notification-db  -> localhost:5435
+#   user-db          -> localhost:5437
 #   rabbitmq         -> localhost:5672   (management UI: localhost:15672, guest/guest)
 # -------------------------------------------------------------------
 
@@ -110,11 +111,31 @@ services:
     networks:
       - stayseat-net
 
+  user-db:
+    image: postgres:16
+    container_name: stayseat-user-db
+    environment:
+      POSTGRES_DB: user_db
+      POSTGRES_USER: user_svc
+      POSTGRES_PASSWORD: user_pass
+    ports:
+      - "5437:5432"
+    volumes:
+      - user-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user_svc -d user_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - stayseat-net
+
 volumes:
   auth-db-data:
   hotel-db-data:
   restaurant-db-data:
   notification-db-data:
+  user-db-data:
 
 networks:
   stayseat-net:
