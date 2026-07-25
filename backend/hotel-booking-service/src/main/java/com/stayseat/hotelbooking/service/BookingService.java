@@ -93,8 +93,10 @@ public class BookingService {
         eventPublisher.publish(DomainEvent.of("HotelBookingConfirmed", Map.of(
                 "bookingId", saved.getId(),
                 "customerId", saved.getCustomerId(),
+                "roomId", saved.getRoomId(),
                 "checkInDate", saved.getCheckInDate(),
-                "checkOutDate", saved.getCheckOutDate()
+                "checkOutDate", saved.getCheckOutDate(),
+                "totalAmount", saved.getTotalAmount()
         )));
 
         return toResponse(saved);

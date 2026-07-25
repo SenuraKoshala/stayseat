@@ -59,6 +59,14 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
+        <!-- Messaging (RabbitMQ) - local stand-in for the report's Amazon SNS/SQS
+             cloud broker (CA01 Fig 3 lists RabbitMQ as an allowed option).
+             Publishes domain events consumed by the Notification Service. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+
         <!-- JWT (validating tokens issued by Auth Service) -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>

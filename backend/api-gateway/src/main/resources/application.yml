@@ -1,0 +1,50 @@
+server:
+  port: ${GATEWAY_PORT:8090}   # single public entry point (8080 is commonly occupied on dev machines)
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        # Controllers already expose full /api/v1/<svc>/** paths, so requests
+        # are forwarded verbatim - no prefix rewriting needed.
+        - id: auth-service
+          uri: ${AUTH_SERVICE_URI:http://localhost:8081}
+          predicates:
+            - Path=/api/v1/auth/**
+
+        - id: hotel-booking-service
+          uri: ${HOTEL_SERVICE_URI:http://localhost:8083}
+          predicates:
+            - Path=/api/v1/hotel/**
+
+        - id: restaurant-booking-service
+          uri: ${RESTAURANT_SERVICE_URI:http://localhost:8084}
+          predicates:
+            - Path=/api/v1/restaurant/**
+
+        - id: notification-service
+          uri: ${NOTIFICATION_SERVICE_URI:http://localhost:8082}
+          predicates:
+            - Path=/api/v1/notifications/**
+
+        # Not implemented yet - uncomment when the service exists:
+        # - id: user-service
+        #   uri: ${USER_SERVICE_URI:http://localhost:8086}
+        #   predicates:
+        #     - Path=/api/v1/users/**
+        # - id: payment-service
+        #   uri: ${PAYMENT_SERVICE_URI:http://localhost:8087}
+        #   predicates:
+        #     - Path=/api/v1/payments/**
+
+# Shared JWT signing secret - MUST match Auth Service exactly. Default lines up
+# with the booking services' placeholder so the stack verifies tokens out of the box.
+app:
+  jwt:
+    secret: ${JWT_SECRET:dev-only-placeholder-secret-change-me-before-integrating-with-auth-service}
+  # Simple per-IP rate limit (contract 4.7: "simple bucket, doesn't need to be fancy").
+  ratelimit:
+    capacity: 100        # burst size (max tokens per client)
+    refill-per-second: 50 # sustained requests/second per client

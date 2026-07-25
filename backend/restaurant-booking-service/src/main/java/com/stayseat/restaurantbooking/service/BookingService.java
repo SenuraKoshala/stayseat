@@ -86,6 +86,7 @@ public class BookingService {
         eventPublisher.publish(DomainEvent.of("RestaurantBookingConfirmed", Map.of(
                 "bookingId", saved.getId(),
                 "customerId", saved.getCustomerId(),
+                "tableId", saved.getTableId(),
                 "reservationDate", saved.getReservationDate(),
                 "timeSlot", saved.getTimeSlot()
         )));
