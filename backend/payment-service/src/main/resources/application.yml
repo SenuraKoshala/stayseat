@@ -1,0 +1,49 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: payment-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/payment_db
+    username: payment_svc
+    password: payment_pass
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate   # schema is owned by Flyway migrations, not Hibernate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: false
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+
+# Shared JWT signing secret - MUST match the Auth Service's secret exactly.
+# For local dev this is a placeholder; get the real value from whoever owns Auth Service
+# and put it in an environment variable instead of committing it here.
+app:
+  jwt:
+    secret: ${JWT_SECRET:dev-only-placeholder-secret-change-me-before-integrating-with-auth-service}
+  payment:
+    # Shared secret used to verify inbound gateway webhook signatures (HMAC-SHA256
+    # over the raw request body). In production this is the signing secret Stripe/
+    # PayHere give you for the specific webhook endpoint - never the same as the
+    # JWT secret above.
+    webhook-secret: ${PAYMENT_WEBHOOK_SECRET:dev-only-webhook-secret-change-me}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
