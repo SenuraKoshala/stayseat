@@ -5,6 +5,7 @@ import com.senura.authservice.entity.AuthUser;
 import com.senura.authservice.exception.EmailAlreadyExistsException;
 import com.senura.authservice.exception.InvalidCredentialsException;
 import com.senura.authservice.exception.InvalidTokenException;
+import com.senura.authservice.messaging.UserRegisteredPublisher;
 import com.senura.authservice.repository.AuthUserRepository;
 import com.senura.authservice.security.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -23,6 +24,7 @@ public class AuthService {
     private final AuthUserRepository authUserRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final UserRegisteredPublisher userRegisteredPublisher;
 
     @Transactional
     public RegisterResponse register(RegisterRequest request) {
@@ -39,8 +41,8 @@ public class AuthService {
 
         AuthUser saved = authUserRepository.save(user);
 
-        // TODO once the message broker is wired up:
-        // eventPublisher.publish("UserRegistered", new UserRegisteredEvent(saved.getId(), saved.getEmail(), saved.getRole()));
+        // User Service consumes this to create the profile stub row (contract 4.1 -> 4.2).
+        userRegisteredPublisher.publish(saved.getId(), saved.getEmail(), saved.getRole().name());
 
         return RegisterResponse.builder()
                 .userId(saved.getId())

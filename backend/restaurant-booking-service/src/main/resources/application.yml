@@ -1,0 +1,44 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: restaurant-booking-service
+
+  datasource:
+    url: ${RESTAURANT_DB_URL:jdbc:postgresql://localhost:5434/restaurant_booking}
+    username: ${RESTAURANT_DB_USER:restaurant_svc}
+    password: ${RESTAURANT_DB_PASSWORD:restaurant_pass}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate   # schema is owned by Flyway migrations, not Hibernate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: false
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  # RabbitMQ - must point at the same broker the Notification Service consumes from.
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+
+# Shared JWT signing secret - MUST match the Auth Service's secret exactly.
+# For local dev this is a placeholder; get the real value from whoever owns Auth Service
+# and put it in an environment variable instead of committing it here.
+app:
+  jwt:
+    secret: ${JWT_SECRET:dev-only-placeholder-secret-change-me-before-integrating-with-auth-service}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

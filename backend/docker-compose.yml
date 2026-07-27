@@ -1,27 +1,143 @@
-# docker-compose.yml
+# StaySeat - unified local infrastructure
+# -------------------------------------------------------------------
+# Brings up the message broker + one PostgreSQL instance PER service
+# (database-per-service, matching CA01 Figure 2). The Spring Boot
+# services themselves are run from the IDE / Maven and connect to the
+# host ports below. Start everything with:
+#
+#     docker compose -f backend/docker-compose.yml up -d
+#
+# Host ports (what the apps connect to):
+#   auth-db          -> localhost:5436   (5433 is often taken by a local Postgres install)
+#   hotel-db         -> localhost:5432
+#   restaurant-db    -> localhost:5434
+#   notification-db  -> localhost:5435
+#   user-db          -> localhost:5437
+#   rabbitmq         -> localhost:5672   (management UI: localhost:15672, guest/guest)
+# -------------------------------------------------------------------
+
 services:
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: stayseat-rabbitmq
+    ports:
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - stayseat-net
+
   auth-db:
     image: postgres:16
+    container_name: stayseat-auth-db
     environment:
-      POSTGRES_DB: ${AUTH_DB_NAME}
-      POSTGRES_USER: ${AUTH_DB_USER}
-      POSTGRES_PASSWORD: ${AUTH_DB_PASSWORD}
+      POSTGRES_DB: ${AUTH_DB_NAME:-auth_db}
+      POSTGRES_USER: ${AUTH_DB_USER:-auth_svc}
+      POSTGRES_PASSWORD: ${AUTH_DB_PASSWORD:-auth_pass}
     ports:
-      - "5433:5432"
+      - "5436:5432"   # host 5433 commonly collides with a local (non-Docker) Postgres
     volumes:
       - auth-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${AUTH_DB_USER:-auth_svc} -d ${AUTH_DB_NAME:-auth_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - stayseat-net
 
-  user-db:
+  hotel-db:
     image: postgres:16
+    container_name: stayseat-hotel-db
     environment:
-      POSTGRES_DB: ${USER_DB_NAME}
-      POSTGRES_USER: ${USER_DB_USER}
-      POSTGRES_PASSWORD: ${USER_DB_PASSWORD}
+      POSTGRES_DB: hotel_booking
+      POSTGRES_USER: hotel_svc
+      POSTGRES_PASSWORD: hotel_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - hotel-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hotel_svc -d hotel_booking"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - stayseat-net
+
+  restaurant-db:
+    image: postgres:16
+    container_name: stayseat-restaurant-db
+    environment:
+      POSTGRES_DB: restaurant_booking
+      POSTGRES_USER: restaurant_svc
+      POSTGRES_PASSWORD: restaurant_pass
     ports:
       - "5434:5432"
     volumes:
+      - restaurant-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U restaurant_svc -d restaurant_booking"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - stayseat-net
+
+  notification-db:
+    image: postgres:16
+    container_name: stayseat-notification-db
+    environment:
+      POSTGRES_DB: notification_db
+      POSTGRES_USER: ${NOTIF_DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${NOTIF_DB_PASSWORD:-admin}
+    ports:
+      - "5435:5432"
+    volumes:
+      - notification-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${NOTIF_DB_USER:-postgres} -d notification_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - stayseat-net
+
+  user-db:
+    image: postgres:16
+    container_name: stayseat-user-db
+    environment:
+      POSTGRES_DB: user_db
+      POSTGRES_USER: user_svc
+      POSTGRES_PASSWORD: user_pass
+    ports:
+      - "5437:5432"
+    volumes:
       - user-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user_svc -d user_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - stayseat-net
 
 volumes:
   auth-db-data:
+  hotel-db-data:
+  restaurant-db-data:
+  notification-db-data:
   user-db-data:
+
+networks:
+  stayseat-net:
+    driver: bridge
+
