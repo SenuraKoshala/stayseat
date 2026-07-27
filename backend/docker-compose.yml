@@ -11,5 +11,17 @@ services:
     volumes:
       - auth-db-data:/var/lib/postgresql/data
 
+  user-db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: ${USER_DB_NAME}
+      POSTGRES_USER: ${USER_DB_USER}
+      POSTGRES_PASSWORD: ${USER_DB_PASSWORD}
+    ports:
+      - "5434:5432"
+    volumes:
+      - user-db-data:/var/lib/postgresql/data
+
 volumes:
   auth-db-data:
+  user-db-data:
