@@ -7,24 +7,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="payment-service" />
-        <module name="authservice" />
-        <module name="api-gateway" />
-        <module name="restaurant-booking-service" />
         <module name="user-service" />
-        <module name="hotel-booking-service" />
-        <module name="notification-service" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="api-gateway" options="-parameters" />
-      <module name="authservice" options="-parameters" />
-      <module name="hotel-booking-service" options="-parameters" />
-      <module name="notification-service" options="-parameters" />
-      <module name="payment-service" options="-parameters" />
-      <module name="restaurant-booking-service" options="-parameters" />
       <module name="user-service" options="-parameters" />
     </option>
   </component>

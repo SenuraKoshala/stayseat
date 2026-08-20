@@ -27,6 +27,7 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-rabbit loopback_users none"
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 10s
@@ -137,7 +138,7 @@ services:
       POSTGRES_USER: ${PAYMENT_DB_USER}
       POSTGRES_PASSWORD: ${PAYMENT_DB_PASSWORD}
     ports:
-      - "5434:5432"
+      - "5438:5432"
     volumes:
       - payment-db-data:/var/lib/postgresql/data    
 

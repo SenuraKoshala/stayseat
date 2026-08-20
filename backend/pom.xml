@@ -33,5 +33,6 @@
         <module>notification-service</module>
         <module>restaurant-booking-service</module>
         <module>user-service</module>
+        <module>payment-service</module>
     </modules>
 </project>
