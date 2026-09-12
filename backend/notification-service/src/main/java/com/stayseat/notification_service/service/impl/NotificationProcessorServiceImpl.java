@@ -6,6 +6,7 @@ import com.stayseat.notification_service.enums.NotificationStatus;
 import com.stayseat.notification_service.event.payload.HotelBookingConfirmedPayload;
 import com.stayseat.notification_service.event.payload.PaymentProcessedPayload;
 import com.stayseat.notification_service.event.payload.RestaurantBookingConfirmedPayload;
+import com.stayseat.notification_service.event.payload.UserRegisteredPayload;
 import com.stayseat.notification_service.repository.NotificationLogRepository;
 import com.stayseat.notification_service.service.EmailService;
 import com.stayseat.notification_service.service.NotificationProcessorService;
@@ -18,77 +19,82 @@ import java.time.Instant;
 @RequiredArgsConstructor
 public class NotificationProcessorServiceImpl implements NotificationProcessorService {
 
-    private final NotificationLogRepository repository;
+        private final NotificationLogRepository repository;
 
-    private final EmailService emailService;
+        private final EmailService emailService;
 
-    @Override
-    public void processHotelBookingConfirmation(HotelBookingConfirmedPayload payload) {
+        @Override
+        public void processHotelBookingConfirmation(HotelBookingConfirmedPayload payload) {
 
-        emailService.sendEmail(
-                "customer@example.com",
-                "Hotel Booking Confirmed",
-                "Your booking " + payload.getBookingId() + " has been confirmed."
-        );
+                emailService.sendEmail(
+                                "customer@example.com",
+                                "Hotel Booking Confirmed",
+                                "Your booking " + payload.getBookingId() + " has been confirmed.");
 
-        saveLog(
-                payload.getCustomerId(),
-                "HOTEL_BOOKING_CONFIRMATION",
-                NotificationStatus.SENT
-        );
+                saveLog(
+                                payload.getCustomerId(),
+                                "HOTEL_BOOKING_CONFIRMATION",
+                                NotificationStatus.SENT);
 
-    }
+        }
 
-    @Override
-    public void processRestaurantBookingConfirmation(RestaurantBookingConfirmedPayload payload) {
+        @Override
+        public void processRestaurantBookingConfirmation(RestaurantBookingConfirmedPayload payload) {
 
-        emailService.sendEmail(
-                "customer@example.com",
-                "Restaurant Booking Confirmed",
-                "Your reservation has been confirmed."
-        );
+                emailService.sendEmail(
+                                "customer@example.com",
+                                "Restaurant Booking Confirmed",
+                                "Your reservation has been confirmed.");
 
-        saveLog(
-                payload.getCustomerId(),
-                "RESTAURANT_BOOKING_CONFIRMATION",
-                NotificationStatus.SENT
-        );
+                saveLog(
+                                payload.getCustomerId(),
+                                "RESTAURANT_BOOKING_CONFIRMATION",
+                                NotificationStatus.SENT);
 
-    }
+        }
 
-    @Override
-    public void processPaymentNotification(PaymentProcessedPayload payload) {
+        @Override
+        public void processPaymentNotification(PaymentProcessedPayload payload) {
 
-        emailService.sendEmail(
-                "customer@example.com",
-                "Payment Successful",
-                "Payment completed successfully."
-        );
+                emailService.sendEmail(
+                                "customer@example.com",
+                                "Payment Successful",
+                                "Payment completed successfully.");
 
-        saveLog(
-                payload.getCustomerId(),
-                "PAYMENT_SUCCESS",
-                NotificationStatus.SENT
-        );
+                saveLog(
+                                payload.getCustomerId(),
+                                "PAYMENT_SUCCESS",
+                                NotificationStatus.SENT);
 
-    }
+        }
 
-    private void saveLog(
-            java.util.UUID userId,
-            String type,
-            NotificationStatus status
-    ) {
+        @Override
+        public void processUserRegistration(UserRegisteredPayload payload) {
+                emailService.sendEmail(
+                                payload.getEmail(),
+                                "Welcome to StaySeat!",
+                                "Thank you for registering on StaySeat. Your account has been created successfully.");
+                saveLog(
+                                payload.getUserId(),
+                                "USER_REGISTRATION",
+                                NotificationStatus.SENT);
+        }
 
-        NotificationLog log = NotificationLog.builder()
-                .userId(userId)
-                .channel(NotificationChannel.EMAIL)
-                .type(type)
-                .status(status)
-                .sentAt(Instant.now())
-                .build();
+        private void saveLog(
+                        java.util.UUID userId,
+                        String type,
+                        NotificationStatus status) {
 
-        repository.save(log);
+                NotificationLog log = NotificationLog.builder()
+                                .userId(userId)
+                                .channel(NotificationChannel.EMAIL)
+                                .type(type)
+                                .status(status)
+                                .sentAt(Instant.now())
+                                .build();
 
-    }
+                repository.save(log);
+
+        }
 
 }

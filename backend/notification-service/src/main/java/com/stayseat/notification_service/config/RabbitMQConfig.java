@@ -6,7 +6,6 @@ import org.springframework.amqp.core.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
 @Configuration
 public class RabbitMQConfig {
 
@@ -17,11 +16,13 @@ public class RabbitMQConfig {
     public static final String HOTEL_QUEUE = "notification.hotel";
     public static final String RESTAURANT_QUEUE = "notification.restaurant";
     public static final String PAYMENT_QUEUE = "notification.payment";
+    public static final String USER_REGISTERED_QUEUE = "notification.user.registered";
 
     // Routing Keys
     public static final String HOTEL_ROUTING_KEY = "hotel.confirmed";
     public static final String RESTAURANT_ROUTING_KEY = "restaurant.confirmed";
     public static final String PAYMENT_ROUTING_KEY = "payment.#";
+    public static final String USER_REGISTERED_ROUTING_KEY = "user.registered";
 
     @Bean
     public MessageConverter messageConverter() {
@@ -49,6 +50,11 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    public Queue userRegisteredQueue() {
+        return new Queue(USER_REGISTERED_QUEUE, true);
+    }
+
+    @Bean
     public Binding hotelBinding() {
         return BindingBuilder.bind(hotelQueue())
                 .to(topicExchange())
@@ -67,5 +73,12 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(paymentQueue())
                 .to(topicExchange())
                 .with(PAYMENT_ROUTING_KEY);
+    }
+
+    @Bean
+    public Binding userRegisteredBinding() {
+        return BindingBuilder.bind(userRegisteredQueue())
+                .to(topicExchange())
+                .with(USER_REGISTERED_ROUTING_KEY);
     }
 }
